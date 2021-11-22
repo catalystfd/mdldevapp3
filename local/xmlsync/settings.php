@@ -34,4 +34,21 @@ if ($hassiteconfig) {
         get_string('settings:syncpath_desc', 'local_xmlsync'), '', PARAM_TEXT
     ));
 
+    $settings->add(new admin_setting_configtext('local_xmlsync/import_count_threshold',
+        get_string('settings:import_count_threshold', 'local_xmlsync'),
+        get_string('settings:import_count_threshold_desc', 'local_xmlsync'),
+        0, PARAM_INT
+    ));
+
+    $settings->add(new admin_setting_configduration('local_xmlsync/stale_threshold',
+        get_string('settings:stale_threshold', 'local_xmlsync'),
+        get_string('settings:stale_threshold', 'local_xmlsync'), 3600, 3600
+    ));
+
+    $settings->add(new admin_setting_configtext('local_xmlsync/stale_warning_recipients',
+        get_string('settings:stale_warning_recipients', 'local_xmlsync'),
+        get_string('settings:stale_warning_recipients_desc', 'local_xmlsync'),
+        '', PARAM_TEXT
+    ));
+
 }

@@ -27,6 +27,12 @@ $string['pluginname'] = 'XML file import tasks';
 
 $string['settings:syncpath'] = 'Sync file directory';
 $string['settings:syncpath_desc'] = 'Absolute path to the directory where XML import files are uploaded to.';
+$string['settings:import_count_threshold'] = 'Import count change threshold';
+$string['settings:import_count_threshold_desc'] = 'If the number of import rows changes by more than this amount, the import will fail. (0 = no checking)';
+$string['settings:stale_threshold'] = 'Stale import threshold';
+$string['settings:stale_threshold_desc'] = 'An import file older that this will be considered "stale". Attempts to import an old file will send a warning notification. (0 hours = no checking)';
+$string['settings:stale_warning_recipients'] = 'Stale import warning recipients';
+$string['settings:stale_warning_recipients_desc'] = 'A comma-separated list of email addresses to send stale import warnings to. If no addresses are given, site administrators will be notified.';
 
 $string['dryrun'] = 'Dry run: no replica name specified.';
 $string['dryruncomplete'] = 'Dry run complete.';
@@ -41,6 +47,7 @@ $string['userimport:starttask'] = 'Importing users into: {$a}';
 $string['userimport:completetask'] = 'User import complete.';
 $string['userimport:flushentries'] = 'Removing any existing user entries from: {$a}';
 
+$string['error:importcountoverthreshold'] = 'Number of rows in import has exceeded safety threshold (+/- {$a->maxdelta}). Count changed by {$a->countdelta} rows.';
+$string['error:invalidreplica'] = 'Invalid replica table: {$a}';
 $string['error:noopen'] = 'Could not open file {$a}.';
 $string['error:nosyncpath'] = 'Sync file directory path is not set. Please configure in the settings.';
-$string['error:invalidreplica'] = 'Invalid replica table: {$a}';
