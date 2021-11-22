@@ -34,7 +34,7 @@ const USERIMPORT_ACTIVE_REPLICA_SETTING = 'userimport_activereplica';
  *
  * @return string Replica name (local_xmlsync_$replicaname).
  */
-function local_xmlsync_get_userimport_active_replica() {
+function local_xmlsync_get_userimport_active_replica(): string {
     $active = get_config('local_xmlsync', USERIMPORT_ACTIVE_REPLICA_SETTING);
     // Default to first replica if none is set.
     if (empty($active)) {
@@ -49,7 +49,7 @@ function local_xmlsync_get_userimport_active_replica() {
  *
  * @return string Replica name (local_xmlsync_$replicaname).
  */
-function local_xmlsync_get_userimport_inactive_replica() {
+function local_xmlsync_get_userimport_inactive_replica(): string {
     if (local_xmlsync_get_userimport_active_replica() == USERIMPORT_A) {
         return USERIMPORT_B;
     } else {
@@ -63,11 +63,11 @@ function local_xmlsync_get_userimport_inactive_replica() {
  * @param string $replicaname valid replica name.
  * @return array|null Metadata from import, if set.
  */
-function local_xmlsync_get_userimport_metadata($replicaname) {
+function local_xmlsync_get_userimport_metadata($replicaname): ?array {
     local_xmlsync_validate_userimport_replica($replicaname);
     $metadata = get_config('local_xmlsync', "{$replicaname}_metadata");
     if ($metadata) {
-        return json_decode($metadata);
+        return json_decode($metadata, true);
     } else {
         return null;
     }
@@ -84,7 +84,7 @@ function local_xmlsync_get_userimport_metadata($replicaname) {
  * @throws \Exception if not valid.
  * @return void
  */
-function local_xmlsync_validate_userimport_replica($replicaname) {
+function local_xmlsync_validate_userimport_replica($replicaname): void {
     if (!in_array($replicaname, USERIMPORT_REPLICAS, true)) {
         throw new \Exception(get_string('error:invalidreplica', 'local_xmlsync', $replicaname));
     }
