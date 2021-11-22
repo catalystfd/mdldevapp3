@@ -51,6 +51,13 @@ class user_import_task extends \core\task\scheduled_task {
 
         $importer = new \local_xmlsync\import\user_importer();
 
+        // Fetch last import count from active replica's metadata, if present.
+        $active = local_xmlsync_get_userimport_active_replica();
+        $activemeta = local_xmlsync_get_userimport_metadata($active);
+        if (array_key_exists('importcount', $activemeta)) {
+            $importer->lastimportcount = $activemeta['importcount'];
+        }
+
         $inactive = local_xmlsync_get_userimport_inactive_replica();
 
         echo get_string('userimport:starttask', 'local_xmlsync', $inactive) . "\n";

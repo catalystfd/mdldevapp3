@@ -34,6 +34,13 @@ class user_importer {
     const XMLROWCOUNT = "ROWCOUNT";
 
     /**
+     * Import count from last import, if any.
+     * Set during task initialisation.
+     * @var int|null
+     */
+    public $lastimportcount = null;
+
+    /**
      * Mapping from incoming XML field names to database column names.
      */
     public $rowmapping = array(
@@ -176,8 +183,22 @@ class user_importer {
 
         }
 
+        // Ensure imported row count matches expected tally.
         if ($importcount != $metadata["rowcount"]) {
             throw new \Exception("Row count mismatch: imported {$importcount} rows, expected {$metadata["rowcount"]} rows.");
+        }
+
+        // Ensure imported row count hasn't drifted too far from any previous value.
+        if ($this->lastimportcount) {
+            $countdelta = $importcount - $this->lastimportcount;
+            $maxdelta = get_config('local_xmlsync', 'import_count_threshold');
+            // Skip the check if threshold is set to 0.
+            if ($maxdelta > 0 && $maxdelta < abs($countdelta)) {
+                throw new \Exception(get_string('error:importcountoverthreshold', 'local_xmlsync', array(
+                    'countdelta' => $countdelta,
+                    'maxdelta' => $maxdelta,
+                )));
+            }
         }
 
         $metadata['importcount'] = $importcount;
