@@ -42,7 +42,7 @@ if ($hassiteconfig) {
 
     $settings->add(new admin_setting_configduration('local_xmlsync/stale_threshold',
         get_string('settings:stale_threshold', 'local_xmlsync'),
-        get_string('settings:stale_threshold_desc', 'local_xmlsync'), (24 * 3600), 3600 // One day default
+        get_string('settings:stale_threshold_desc', 'local_xmlsync'), (24 * 3600), 3600 // One day default.
     ));
 
     $settings->add(new admin_setting_configtext('local_xmlsync/stale_warning_recipients',
@@ -53,7 +53,7 @@ if ($hassiteconfig) {
 
     $settings->add(new admin_setting_configduration('local_xmlsync/email_cooldown',
         get_string('settings:email_cooldown', 'local_xmlsync'),
-        get_string('settings:email_cooldown_desc', 'local_xmlsync'), 3600, 3600 // One hour default
+        get_string('settings:email_cooldown_desc', 'local_xmlsync'), 3600, 3600 // One hour default.
     ));
 
 }

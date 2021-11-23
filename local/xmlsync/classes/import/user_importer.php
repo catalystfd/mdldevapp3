@@ -41,6 +41,13 @@ class user_importer {
     public $lastimportcount = null;
 
     /**
+     * Source timestamp from last import, if any.
+     * Set during task initialisation.
+     * @var int|null
+     */
+    public $lastsourcetimestamp = null;
+
+    /**
      * Mapping from incoming XML field names to database column names.
      */
     public $rowmapping = array(
@@ -97,7 +104,7 @@ class user_importer {
     /**
      * Insert XML value into row data, mapping to table column keys.
      *
-     * @param array $rowdata
+     * @param array &$rowdata Array to gather field values.
      * @param \DOMNode $node
      * @param string $xmlfield
      * @return void
@@ -128,7 +135,7 @@ class user_importer {
         global $DB;
 
         if (empty($replicaname)) {
-            echo get_string('dryrun', 'local_xmlsync') . "\n";
+            echo get_string('warning:dryrun', 'local_xmlsync') . "\n";
             $liveimport = false;
         } else {
             local_xmlsync_validate_userimport_replica($replicaname);
@@ -151,13 +158,31 @@ class user_importer {
         assert($reader->name == self::XMLROWSET);
 
         // Parse time and convert to Unix timestamp.
-        $timestamp = (new \DateTimeImmutable($reader->getAttribute("timestamp")))->getTimestamp();
+        $sourcetimestamp = (new \DateTimeImmutable($reader->getAttribute("timestamp")))->getTimestamp();
 
         $metadata = array(
             "sourcefile" => $reader->getAttribute("sourcefile"),
-            "sourcetimestamp" => $timestamp,
+            "sourcetimestamp" => $sourcetimestamp,
         );
         $importcount = 0;
+
+        // Check for stale file import: warn, but continue processing.
+        $stalethreshold = get_config('local_xmlsync', 'stale_threshold'); // Difference in seconds.
+        $now = (new \DateTimeImmutable('now'))->getTimestamp();
+        $filedelta = ($now - $sourcetimestamp); // Difference in seconds.
+        if ($filedelta > $stalethreshold) {
+            local_xmlsync_warn_userimport(
+                get_string('userimport:stalefile', 'local_xmlsync', $reader->getAttribute("timestamp"))
+            );
+        }
+
+        // Check for last timestamp match: skip processing if equal.
+        if ($this->lastsourcetimestamp) {
+            if ($this->lastsourcetimestamp == $sourcetimestamp) {
+                echo get_string('warning:timestampmatch', 'local_xmlsync') . "\n";
+                return false;
+            }
+        }
 
         // Traverse the XML document, looking for rows and a rowcount at the end.
         while ($reader->read()) {

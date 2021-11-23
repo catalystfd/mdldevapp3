@@ -30,26 +30,30 @@ $string['settings:syncpath_desc'] = 'Absolute path to the directory where XML im
 $string['settings:import_count_threshold'] = 'Import count change threshold';
 $string['settings:import_count_threshold_desc'] = 'If the number of import rows changes by more than this amount, the import will fail. (0 = no checking)';
 $string['settings:stale_threshold'] = 'Stale import threshold';
-$string['settings:stale_threshold_desc'] = 'An import file older that this will be considered "stale". Attempts to import an old file will send a warning notification. (0 hours = no checking)';
+$string['settings:stale_threshold_desc'] = 'An import file older that this will be considered "stale". Attempting to import a stale file will send a warning notification. (0 hours = no checking)';
 $string['settings:stale_warning_recipients'] = 'Stale import warning recipients';
 $string['settings:stale_warning_recipients_desc'] = 'A comma-separated list of email addresses to send stale import warnings to. If no addresses are given, site administrators will be notified.';
 $string['settings:email_cooldown'] = 'Email cooldown period';
 $string['settings:email_cooldown_desc'] = 'The minimum elapsed time between sending warning emails. (Warnings will still be noted in the task log.)';
 
-$string['dryrun'] = 'Dry run: no replica name specified.';
 $string['dryruncomplete'] = 'Dry run complete.';
 $string['dryrunmetadata'] = 'Metadata: {$a}';
-
 $string['importingrowcount'] = '{$a} rows imported.';
 $string['importingstart'] = 'Importing...';
 $string['setactivereplica'] = 'Setting replica as active: {$a}';
+$string['tasklogwarning'] = 'WARNING: {$a}';
 
 $string['userimport:crontask'] = 'Import User XML file from SFTP.';
-$string['userimport:starttask'] = 'Importing users into: {$a}';
+$string['userimport:starttask'] = 'Importing users into replica table: {$a}';
 $string['userimport:completetask'] = 'User import complete.';
 $string['userimport:flushentries'] = 'Removing any existing user entries from: {$a}';
+$string['userimport:stalefile'] = 'The supplied User import XML file is older than expected. (ROWSET timestamp given: {$a})';
+$string['userimport:stalemailsubject'] = 'Warning: Old XML file encountered in user import';
 
 $string['error:importcountoverthreshold'] = 'Number of rows in import has exceeded safety threshold (+/- {$a->maxdelta}). Count changed by {$a->countdelta} rows.';
 $string['error:invalidreplica'] = 'Invalid replica table: {$a}';
 $string['error:noopen'] = 'Could not open file {$a}.';
 $string['error:nosyncpath'] = 'Sync file directory path is not set. Please configure in the settings.';
+
+$string['warning:timestampmatch'] = 'Timestamp exactly matches previously imported file. Importing skipped.';
+$string['warning:dryrun'] = 'Dry run: no replica name specified.';
