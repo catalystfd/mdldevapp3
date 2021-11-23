@@ -33,6 +33,8 @@ $string['settings:stale_threshold'] = 'Stale import threshold';
 $string['settings:stale_threshold_desc'] = 'An import file older that this will be considered "stale". Attempts to import an old file will send a warning notification. (0 hours = no checking)';
 $string['settings:stale_warning_recipients'] = 'Stale import warning recipients';
 $string['settings:stale_warning_recipients_desc'] = 'A comma-separated list of email addresses to send stale import warnings to. If no addresses are given, site administrators will be notified.';
+$string['settings:email_cooldown'] = 'Email cooldown period';
+$string['settings:email_cooldown_desc'] = 'The minimum elapsed time between sending warning emails. (Warnings will still be noted in the task log.)';
 
 $string['dryrun'] = 'Dry run: no replica name specified.';
 $string['dryruncomplete'] = 'Dry run complete.';
