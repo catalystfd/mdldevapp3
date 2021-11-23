@@ -51,20 +51,23 @@ class user_import_task extends \core\task\scheduled_task {
 
         $importer = new \local_xmlsync\import\user_importer();
 
-        // Fetch last import count from active replica's metadata, if present.
+        // Fetch last import count and timestamp from active replica's metadata, if present.
         $active = local_xmlsync_get_userimport_active_replica();
         $activemeta = local_xmlsync_get_userimport_metadata($active);
         if (array_key_exists('importcount', $activemeta)) {
             $importer->lastimportcount = $activemeta['importcount'];
         }
+        if (array_key_exists('sourcetimestamp', $activemeta)) {
+            $importer->lastsourcetimestamp = $activemeta['sourcetimestamp'];
+        }
 
         $inactive = local_xmlsync_get_userimport_inactive_replica();
 
         echo get_string('userimport:starttask', 'local_xmlsync', $inactive) . "\n";
-        $importresult = $importer->import($inactive);
+        $importcompleted = $importer->import($inactive);
 
-        // If import is successful, set new active replica table.
-        if ($importresult) {
+        // If a successful import took place, set new active replica table.
+        if ($importcompleted) {
             echo get_string('userimport:completetask', 'local_xmlsync') . "\n";
             echo get_string('setactivereplica', 'local_xmlsync', $inactive) . "\n";
             local_xmlsync_set_userimport_active_replica($inactive);
