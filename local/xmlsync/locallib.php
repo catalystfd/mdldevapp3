@@ -100,3 +100,92 @@ function local_xmlsync_set_userimport_active_replica($replicaname) {
     local_xmlsync_validate_userimport_replica($replicaname);
     set_config(USERIMPORT_ACTIVE_REPLICA_SETTING, $replicaname, 'local_xmlsync');
 }
+
+/**
+ * Issue warning emails to nominated users.
+ *
+ * A warning will not be issued unless a cooldown period has passed since the last warning.
+ *
+ * @param string $warningmessage A message to send to nominated recipients.
+ * @return void
+ */
+function local_xmlsync_warn_userimport($warningmessage): void {
+    $cooldown = get_config('local_xmlsync', 'email_cooldown');
+    $lastwarning = get_config('local_xmlsync', 'lastwarningtimestamp');
+    $now = (new \DateTimeImmutable('now'))->getTimestamp();
+
+    $sendemail = false;
+
+    // Do not re-send warning if within the cooldown period.
+    if ($cooldown && $lastwarning) {
+        $warningdelta = $now - $lastwarning;
+        if ($warningdelta > $cooldown) {
+            $sendemail = true;
+        }
+    }
+
+    // Always note warning in task log.
+    echo get_string('tasklogwarning', 'local_xmlsync', $warningmessage) . "\n";
+
+    if ($sendemail) {
+        $warnlist = local_xmlsync_get_warning_recipients();
+
+        $data = new \core\message\message();
+        $data->component         = 'moodle';
+        $data->name              = 'instantmessage';
+        $data->subject           = get_string('userimport:stalemailsubject', 'local_xmlsync');
+        $data->userfrom          = \core_user::get_noreply_user();
+        $data->fullmessage       = $warningmessage;
+        $data->fullmessageformat = FORMAT_PLAIN;
+        $data->contexturl        = new moodle_url('/admin/tasklogs.php', array('filter' => 'local_xmlsync'));
+        $data->contexturlname    = 'Task log';
+
+        foreach ($warnlist as $warnaddress) {
+            // Use dummy user to mail to email addresses that may not have a user.
+            $dummyemailuser = \core_user::get_noreply_user();
+            $dummyemailuser->firstname = false; // Remove "Do not reply to this email" name.
+            $dummyemailuser->email = $warnaddress;
+            $dummyemailuser->emailstop = false;
+            $data->userto = $dummyemailuser;
+
+            message_send($data);
+        }
+        set_config('lastwarningtimestamp', $now, 'local_xmlsync');
+    } else {
+        echo get_string('emailcooldownskip', 'local_xmlsync') . "\n";
+    }
+
+}
+
+/**
+ * Get a list of email addresses to send old file warnings to.
+ *
+ * If the plugin config has no email addresses, fall back to mailing
+ * the site's administrators.
+ *
+ * @return array Array of email addresses
+ */
+function local_xmlsync_get_warning_recipients(): array {
+    global $CFG;
+    $recipients = array();
+
+    $settingrecipients = get_config('local_xmlsync', 'stale_warning_recipients');
+
+    if ($settingrecipients) {
+        // Split and trim comma-separated email values.
+        $parts = explode(',', $settingrecipients);
+        foreach ($parts as $part) {
+            $address = trim($part);
+            $recipients[] = $address;
+        }
+    } else {
+        // Get siteadmin emails.
+        $adminuids = explode(',', $CFG->siteadmins);
+        foreach ($adminuids as $uid) {
+            $user = \core_user::get_user($uid, 'email');
+            $recipients[] = $user->email;
+        }
+    }
+
+    return $recipients;
+}

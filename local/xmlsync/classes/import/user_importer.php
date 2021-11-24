@@ -172,7 +172,10 @@ class user_importer {
         $filedelta = ($now - $sourcetimestamp); // Difference in seconds.
         if ($filedelta > $stalethreshold) {
             local_xmlsync_warn_userimport(
-                get_string('userimport:stalefile', 'local_xmlsync', $reader->getAttribute("timestamp"))
+                get_string('userimport:stalefile', 'local_xmlsync')
+                . "\n\n"
+                . get_string('userimport:stalefile_timestamp', 'local_xmlsync', $reader->getAttribute("timestamp"))
+                . "\n"
             );
         }
 

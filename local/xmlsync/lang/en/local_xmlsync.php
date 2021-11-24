@@ -42,12 +42,14 @@ $string['importingrowcount'] = '{$a} rows imported.';
 $string['importingstart'] = 'Importing...';
 $string['setactivereplica'] = 'Setting replica as active: {$a}';
 $string['tasklogwarning'] = 'WARNING: {$a}';
+$string['emailcooldownskip'] = 'Warning email has already been sent within cooldown period. Skipping further email.';
 
-$string['userimport:crontask'] = 'Import User XML file from SFTP.';
+$string['userimport:crontask'] = 'Import User XML file from SFTP';
 $string['userimport:starttask'] = 'Importing users into replica table: {$a}';
 $string['userimport:completetask'] = 'User import complete.';
 $string['userimport:flushentries'] = 'Removing any existing user entries from: {$a}';
-$string['userimport:stalefile'] = 'The supplied User import XML file is older than expected. (ROWSET timestamp given: {$a})';
+$string['userimport:stalefile'] = "The supplied user import XML file is older than expected.\nThe import task will continue, but a newer file should be uploaded if available.";
+$string['userimport:stalefile_timestamp'] = 'ROWSET timestamp given: {$a}';
 $string['userimport:stalemailsubject'] = 'Warning: Old XML file encountered in user import';
 
 $string['error:importcountoverthreshold'] = 'Number of rows in import has exceeded safety threshold (+/- {$a->maxdelta}). Count changed by {$a->countdelta} rows.';
