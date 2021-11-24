@@ -27,7 +27,7 @@ namespace local_xmlsync\import;
 defined('MOODLE_INTERNAL') || die();
 
 
-class user_importer {
+class user_importer extends base_importer {
     const USER_IMPORT_FILENAME = 'moodle_per.xml';
     const XMLROWSET = "ROWSET";
     const XMLROW = "ROW";
@@ -76,50 +76,11 @@ class user_importer {
      * Constructor.
      */
     public function __construct() {
-        $this->filepath = $this->get_filepath(get_config('local_xmlsync', 'syncpath'));
+        $this->filepath = $this->get_filepath(get_config('local_xmlsync', 'syncpath'), self::USER_IMPORT_FILENAME);
         $this->reader = new \XMLReader();
         if (!$this->reader->open($this->filepath)) {
             throw new \Exception(get_string('error:noopen', 'local_xmlsync', $this->filepath));
         }
-    }
-
-    /**
-     * Helper: join up filepaths.
-     *
-     * @param string $basepath
-     * @throws \Exception when syncpath is empty.
-     * @return string
-     */
-    protected function get_filepath($basepath) : string {
-        $parts = array($basepath, self::USER_IMPORT_FILENAME);
-
-        if (empty($basepath)) {
-            throw new \Exception(get_string('error:nosyncpath', 'local_xmlsync'));
-        }
-
-        // Deal with doubled slashes.
-        return preg_replace('#/+#', '/', join('/', $parts));
-    }
-
-    /**
-     * Insert XML value into row data, mapping to table column keys.
-     *
-     * @param array &$rowdata Array to gather field values.
-     * @param \DOMNode $node
-     * @param string $xmlfield
-     * @return void
-     */
-    public function import_rowfield(&$rowdata, $node, $xmlfield) {
-        $columnname = $this->rowmapping[$xmlfield];
-        $nodevalue = $node->getElementsByTagName($xmlfield)[0]->nodeValue;
-
-        if (substr_compare($columnname, "_dt", -strlen("_dt")) == 0) {
-            // Special handling for timestamps.
-            $nodevalue = (int) $nodevalue;
-        }
-
-        $rowdata[$columnname] = $nodevalue;
-
     }
 
     /**
@@ -171,11 +132,12 @@ class user_importer {
         $now = (new \DateTimeImmutable('now'))->getTimestamp();
         $filedelta = ($now - $sourcetimestamp); // Difference in seconds.
         if ($filedelta > $stalethreshold) {
-            local_xmlsync_warn_userimport(
+            local_xmlsync_warn_import(
                 get_string('userimport:stalefile', 'local_xmlsync')
                 . "\n\n"
                 . get_string('userimport:stalefile_timestamp', 'local_xmlsync', $reader->getAttribute("timestamp"))
-                . "\n"
+                . "\n",
+                get_string('userimport:stalemailsubject', 'local_xmlsync')
             );
         }
 

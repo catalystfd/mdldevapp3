@@ -44,6 +44,14 @@ $string['setactivereplica'] = 'Setting replica as active: {$a}';
 $string['tasklogwarning'] = 'WARNING: {$a}';
 $string['emailcooldownskip'] = 'Warning email has already been sent within cooldown period. Skipping further email.';
 
+$string['enrolimport:crontask'] = 'Import Enrol XML file from SFTP';
+$string['enrolimport:starttask'] = 'Importing enrolment data into replica table: {$a}';
+$string['enrolimport:completetask'] = 'Enrol import complete.';
+$string['enrolimport:flushentries'] = 'Removing any existing enrol entries from: {$a}';
+$string['enrolimport:stalefile'] = "The supplied enrol import XML file is older than expected.\nThe import task will continue, but a newer file should be uploaded if available.";
+$string['enrolimport:stalefile_timestamp'] = 'ROWSET timestamp given: {$a}';
+$string['enrolimport:stalemailsubject'] = 'Warning: Old XML file encountered in enrol import';
+
 $string['userimport:crontask'] = 'Import User XML file from SFTP';
 $string['userimport:starttask'] = 'Importing users into replica table: {$a}';
 $string['userimport:completetask'] = 'User import complete.';

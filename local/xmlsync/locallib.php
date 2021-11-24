@@ -23,11 +23,92 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+const ENROLIMPORT_A = 'enrolimport_a';
+const ENROLIMPORT_B = 'enrolimport_b';
+const ENROLIMPORT_REPLICAS = array(ENROLIMPORT_A, ENROLIMPORT_B);
+const ENROLIMPORT_ACTIVE_REPLICA_SETTING = 'enrolimport_activereplica';
+
 const USERIMPORT_A = 'userimport_a';
 const USERIMPORT_B = 'userimport_b';
 const USERIMPORT_REPLICAS = array(USERIMPORT_A, USERIMPORT_B);
-
 const USERIMPORT_ACTIVE_REPLICA_SETTING = 'userimport_activereplica';
+
+
+/*** Enrol Import functions ***/
+
+/**
+ * Get currently active replica name for reading.
+ *
+ * @return string Replica name (local_xmlsync_$replicaname).
+ */
+function local_xmlsync_get_enrolimport_active_replica(): string {
+    $active = get_config('local_xmlsync', ENROLIMPORT_ACTIVE_REPLICA_SETTING);
+    // Default to first replica if none is set.
+    if (empty($active)) {
+        return ENROLIMPORT_A;
+    } else {
+        return $active;
+    }
+}
+
+/**
+ * Get currently inactive replica for XML enrol imports.
+ *
+ * @return string Replica name (local_xmlsync_$replicaname).
+ */
+function local_xmlsync_get_enrolimport_inactive_replica(): string {
+    if (local_xmlsync_get_enrolimport_active_replica() == ENROLIMPORT_A) {
+        return ENROLIMPORT_B;
+    } else {
+        return ENROLIMPORT_A;
+    }
+}
+
+/**
+ * Return deserialized enrol import metadata array.
+ *
+ * @param string $replicaname valid replica name.
+ * @return array|null Metadata from import, if set.
+ */
+function local_xmlsync_get_enrolimport_metadata($replicaname): ?array {
+    local_xmlsync_validate_enrolimport_replica($replicaname);
+    $metadata = get_config('local_xmlsync', "{$replicaname}_metadata");
+    if ($metadata) {
+        return json_decode($metadata, true);
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Ensure a replica name is valid.
+ *
+ * A valid replica name maps to an import table in the database.
+ * E.g.: 'enrolimport_a' <-> local_xmlsync_enrolimport_a
+ *
+ * @param string $replicaname
+ * @throws \Exception if not valid.
+ * @return void
+ */
+function local_xmlsync_validate_enrolimport_replica($replicaname): void {
+    if (!in_array($replicaname, ENROLIMPORT_REPLICAS, true)) {
+        throw new \Exception(get_string('error:invalidreplica', 'local_xmlsync', $replicaname));
+    }
+}
+
+/**
+ * Set active table for XML enrol imports.
+ *
+ * @param string $replicaname Valid replica table name.
+ * @return void
+ */
+function local_xmlsync_set_enrolimport_active_replica($replicaname) {
+    local_xmlsync_validate_enrolimport_replica($replicaname);
+    set_config(ENROLIMPORT_ACTIVE_REPLICA_SETTING, $replicaname, 'local_xmlsync');
+}
+
+
+/*** User Import functions ***/
 
 /**
  * Get currently active replica name for reading.
@@ -71,7 +152,6 @@ function local_xmlsync_get_userimport_metadata($replicaname): ?array {
     } else {
         return null;
     }
-
 }
 
 /**
@@ -101,6 +181,8 @@ function local_xmlsync_set_userimport_active_replica($replicaname) {
     set_config(USERIMPORT_ACTIVE_REPLICA_SETTING, $replicaname, 'local_xmlsync');
 }
 
+/*** Generic Functions ***/
+
 /**
  * Issue warning emails to nominated users.
  *
@@ -109,7 +191,7 @@ function local_xmlsync_set_userimport_active_replica($replicaname) {
  * @param string $warningmessage A message to send to nominated recipients.
  * @return void
  */
-function local_xmlsync_warn_userimport($warningmessage): void {
+function local_xmlsync_warn_import($warningmessage, $subject): void {
     $cooldown = get_config('local_xmlsync', 'email_cooldown');
     $lastwarning = get_config('local_xmlsync', 'lastwarningtimestamp');
     $now = (new \DateTimeImmutable('now'))->getTimestamp();
@@ -133,7 +215,7 @@ function local_xmlsync_warn_userimport($warningmessage): void {
         $data = new \core\message\message();
         $data->component         = 'moodle';
         $data->name              = 'instantmessage';
-        $data->subject           = get_string('userimport:stalemailsubject', 'local_xmlsync');
+        $data->subject           = $subject;
         $data->userfrom          = \core_user::get_noreply_user();
         $data->fullmessage       = $warningmessage;
         $data->fullmessageformat = FORMAT_PLAIN;
