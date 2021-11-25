@@ -170,7 +170,6 @@ class user_importer extends base_importer {
                     $metadata["rowcount"] = (int) $reader->readString();
                 }
             }
-
         }
 
         // Ensure imported row count matches expected tally.
@@ -199,7 +198,6 @@ class user_importer extends base_importer {
             // When successful, update settings for import metadata.
             echo get_string('importingrowcount', 'local_xmlsync', $importcount) . "\n";
             set_config("{$replicaname}_metadata", json_encode($metadata), 'local_xmlsync');
-
             return true;
         } else {
             // This should only happen in diagnostic dry runs.

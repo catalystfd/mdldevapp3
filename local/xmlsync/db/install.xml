@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/xmlsync/db" VERSION="20211118" COMMENT="XMLDB file for Moodle local/xmlsync"
+<XMLDB PATH="local/xmlsync/db" VERSION="20211125" COMMENT="XMLDB file for Moodle local/xmlsync"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="local_xmlsync_userimport_a" COMMENT="Stores import data from an incoming XML file. Replica one of two.">
+    <TABLE NAME="local_xmlsync_userimport_a" COMMENT="Stores user import data from an incoming XML file. Replica one of two.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -30,7 +30,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_xmlsync_userimport_b" COMMENT="Stores import data from an incoming XML file. Replica two of two.">
+    <TABLE NAME="local_xmlsync_userimport_b" COMMENT="Stores user import data from an incoming XML file. Replica two of two.">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -51,6 +51,46 @@
         <FIELD NAME="deactivate_dt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="archive_dt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="purge_dt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_xmlsync_enrolimport_a" COMMENT="Stores enrolment import data from an incoming XML file. Replica one of two.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course_idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="role_shortname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="user_idnumber" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="visa_nsi" TYPE="char" LENGTH="3" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="ethnic_codes" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Ethnicity codes. Three-digit numbers, semicolon-separated."/>
+        <FIELD NAME="ethnic_description" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Ethnicity descriptions. Human-readable, semicolon-separated."/>
+        <FIELD NAME="residency" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="under_25" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+        <FIELD NAME="maori" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+        <FIELD NAME="pacific" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+        <FIELD NAME="international" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_xmlsync_enrolimport_b" COMMENT="Stores enrolment import data from an incoming XML file. Replica two of two.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course_idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="role_shortname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="user_idnumber" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="visa_nsi" TYPE="char" LENGTH="3" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="ethnic_codes" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Ethnicity codes. Three-digit numbers, semicolon-separated."/>
+        <FIELD NAME="ethnic_description" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Ethnicity descriptions. Human-readable, semicolon-separated."/>
+        <FIELD NAME="residency" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="under_25" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+        <FIELD NAME="maori" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+        <FIELD NAME="pacific" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+        <FIELD NAME="international" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
