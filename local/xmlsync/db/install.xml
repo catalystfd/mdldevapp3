@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/xmlsync/db" VERSION="20211125" COMMENT="XMLDB file for Moodle local/xmlsync"
+<XMLDB PATH="local/xmlsync/db" VERSION="20211126" COMMENT="XMLDB file for Moodle local/xmlsync"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -63,7 +63,6 @@
         <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="role_shortname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="user_idnumber" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="visa_nsi" TYPE="char" LENGTH="3" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="ethnic_codes" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Ethnicity codes. Three-digit numbers, semicolon-separated."/>
         <FIELD NAME="ethnic_description" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Ethnicity descriptions. Human-readable, semicolon-separated."/>
         <FIELD NAME="residency" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -83,7 +82,6 @@
         <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="role_shortname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="user_idnumber" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="visa_nsi" TYPE="char" LENGTH="3" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="ethnic_codes" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Ethnicity codes. Three-digit numbers, semicolon-separated."/>
         <FIELD NAME="ethnic_description" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Ethnicity descriptions. Human-readable, semicolon-separated."/>
         <FIELD NAME="residency" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>

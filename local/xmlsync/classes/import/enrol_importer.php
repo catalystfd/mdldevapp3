@@ -41,7 +41,6 @@ class enrol_importer extends base_importer {
         'USERNAME'           => 'username',
         'ROLE_SHORTNAME'     => 'role_shortname',
         'USER_IDNUMBER'      => 'user_idnumber',
-        'VISA_NSI'           => 'visa_nsi',
         'ETHNIC_CODES'       => 'ethnic_codes',
         'ETHNIC_DESCRIPTION' => 'ethnic_description',
         'RESIDENCY'          => 'residency',
