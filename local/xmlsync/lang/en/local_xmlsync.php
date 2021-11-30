@@ -44,6 +44,14 @@ $string['setactivereplica'] = 'Setting replica as active: {$a}';
 $string['tasklogwarning'] = 'WARNING: {$a}';
 $string['emailcooldownskip'] = 'Warning email has already been sent within cooldown period. Skipping further email.';
 
+$string['courseimport:crontask'] = 'Import course XML file from SFTP';
+$string['courseimport:starttask'] = 'Importing courses into table: {$a}';
+$string['courseimport:completetask'] = 'Course import complete.';
+$string['courseimport:flushentries'] = 'Removing any existing course entries from: {$a}';
+$string['courseimport:stalefile'] = "The supplied course import XML file is older than expected.\nThe import task will continue, but a newer file should be uploaded if available.";
+$string['courseimport:stalefile_timestamp'] = 'ROWSET timestamp given: {$a}';
+$string['courseimport:stalemailsubject'] = 'Warning: Old XML file encountered in course import';
+
 $string['enrolimport:crontask'] = 'Import Enrol XML file from SFTP';
 $string['enrolimport:starttask'] = 'Importing enrolment data into replica table: {$a}';
 $string['enrolimport:completetask'] = 'Enrol import complete.';
@@ -66,4 +74,4 @@ $string['error:noopen'] = 'Could not open file {$a}.';
 $string['error:nosyncpath'] = 'Sync file directory path is not set. Please configure in the settings.';
 
 $string['warning:timestampmatch'] = 'Timestamp exactly matches previously imported file. Importing skipped.';
-$string['warning:dryrun'] = 'Dry run: no replica name specified.';
+$string['warning:dryrun'] = 'Dry run: no table name specified.';
