@@ -29,9 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 
 class user_importer extends base_importer {
     const USER_IMPORT_FILENAME = 'moodle_per.xml';
-    const XMLROWSET = "ROWSET";
-    const XMLROW = "ROW";
-    const XMLROWCOUNT = "ROWCOUNT";
 
     /**
      * Import count from last import, if any.
@@ -49,6 +46,7 @@ class user_importer extends base_importer {
 
     /**
      * Mapping from incoming XML field names to database column names.
+     * Note: ACTION is handled separately.
      */
     public $rowmapping = array(
         'USERNAME'      => 'username',
@@ -159,6 +157,8 @@ class user_importer extends base_importer {
                     foreach (array_keys($this->rowmapping) as $xmlfield) {
                         $this->import_rowfield($rowdata, $rownode, $xmlfield);
                     }
+
+                    $rowaction = $this->get_row_element($rownode, self::XMLACTION);
 
                     if ($liveimport) {
                         $DB->insert_record($importtable, $rowdata);

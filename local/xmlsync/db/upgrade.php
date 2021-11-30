@@ -68,14 +68,14 @@ function xmldb_local_xmlsync_upgrade($oldversion) {
 
     if ($oldversion < 2021112600) {
 
-        // Define field visa_nsi to be dropped from local_xmlsync_enrolimport_X replicas
+        // Define field visa_nsi to be dropped from local_xmlsync_enrolimport_X replicas.
         $replicas = array(
             new xmldb_table('local_xmlsync_enrolimport_a'),
             new xmldb_table('local_xmlsync_enrolimport_b'),
         );
         $field = new xmldb_field('visa_nsi');
 
-        foreach($replicas as $table) {
+        foreach ($replicas as $table) {
             // Conditionally launch drop field visa_nsi.
             if ($dbman->field_exists($table, $field)) {
                 $dbman->drop_field($table, $field);

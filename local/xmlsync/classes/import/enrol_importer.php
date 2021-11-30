@@ -29,12 +29,10 @@ defined('MOODLE_INTERNAL') || die();
 
 class enrol_importer extends base_importer {
     const ENROL_IMPORT_FILENAME = 'moodle_enr.xml';
-    const XMLROWSET = "ROWSET";
-    const XMLROW = "ROW";
-    const XMLROWCOUNT = "ROWCOUNT";
 
     /**
      * Mapping from incoming XML field names to database column names.
+     * Note: ACTION is handled separately.
      */
     public $rowmapping = array(
         'COURSE_IDNUMBER'    => 'course_idnumber',
@@ -91,7 +89,6 @@ class enrol_importer extends base_importer {
 
         }
 
-
         $reader = $this->reader;  // Shorthand.
 
         // Ensure we have the right top-level node.
@@ -139,6 +136,8 @@ class enrol_importer extends base_importer {
                     foreach (array_keys($this->rowmapping) as $xmlfield) {
                         $this->import_rowfield($rowdata, $rownode, $xmlfield);
                     }
+
+                    $rowaction = $this->get_row_element($rownode, self::XMLACTION);
 
                     if ($liveimport) {
                         $DB->insert_record($importtable, $rowdata);
