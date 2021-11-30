@@ -27,6 +27,15 @@ namespace local_xmlsync\import;
 defined('MOODLE_INTERNAL') || die();
 
 abstract class base_importer {
+    // Constants common to all importers / XML formats.
+    const XMLROWSET = "ROWSET";
+    const XMLROW = "ROW";
+    const XMLROWCOUNT = "ROWCOUNT";
+    const XMLACTION = "ACTION";
+
+    const ACTION_UPDATE = "U"; // Includes inserts.
+    const ACTION_DELETE = "D";
+
     /**
      * Import count from last import, if any.
      * Set during task initialisation.
@@ -86,6 +95,19 @@ abstract class base_importer {
         }
 
         $rowdata[$columnname] = $nodevalue;
+    }
+
+    /**
+     * Helper: get a specific element from within a row body.
+     *
+     * Assumes unique element names in a row.
+     *
+     * @param \DOMNode $node
+     * @param string $xmlfield
+     * @return mixed
+     */
+    public function get_row_element($node, $xmlfield) {
+        return($node->getElementsByTagName($xmlfield)[0]->nodeValue);
     }
 
 }
