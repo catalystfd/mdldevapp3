@@ -73,6 +73,7 @@ $string['error:invalidreplica'] = 'Invalid replica table: {$a}';
 $string['error:noopen'] = 'Could not open file {$a}.';
 $string['error:nosyncpath'] = 'Sync file directory path is not set. Please configure in the settings.';
 $string['error:invalidtable'] = 'Invalid table: {$a}';
+$string['error:unknownaction'] = 'Unknown action in import file: \'{$a}\'';
 
 $string['warning:timestampmatch'] = 'Timestamp exactly matches previously imported file. Importing skipped.';
 $string['warning:dryrun'] = 'Dry run: no table name specified.';
