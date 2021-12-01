@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 class user_importer extends base_importer {
-    const USER_IMPORT_FILENAME = 'moodle_per.xml';
+    const USERIMPORT_FILENAME = 'moodle_per.xml';
 
     /**
      * Import count from last import, if any.
@@ -74,7 +74,7 @@ class user_importer extends base_importer {
      * Constructor.
      */
     public function __construct() {
-        $this->filepath = $this->get_filepath(get_config('local_xmlsync', 'syncpath'), self::USER_IMPORT_FILENAME);
+        $this->filepath = $this->get_filepath(get_config('local_xmlsync', 'syncpath'), self::USERIMPORT_FILENAME);
         $this->reader = new \XMLReader();
         if (!$this->reader->open($this->filepath)) {
             throw new \Exception(get_string('error:noopen', 'local_xmlsync', $this->filepath));

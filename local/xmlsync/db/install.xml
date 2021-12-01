@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/xmlsync/db" VERSION="20211126" COMMENT="XMLDB file for Moodle local/xmlsync"
+<XMLDB PATH="local/xmlsync/db" VERSION="20211201" COMMENT="XMLDB file for Moodle local/xmlsync"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -89,6 +89,34 @@
         <FIELD NAME="maori" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
         <FIELD NAME="pacific" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
         <FIELD NAME="international" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_xmlsync_crsimport" COMMENT="Stores course import data from an incoming XML file.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course_idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_shortname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_template" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Assumed same characteristics as course_idnumber"/>
+        <FIELD NAME="course_visibility" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Assuming boolean per {course}.visible."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_xmlsync_crsimport_log" COMMENT="Logs course import data from an incoming XML file.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="rowaction" TYPE="char" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Import row action: U=Create/Update, D=Delete"/>
+        <FIELD NAME="rowprocessed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time when import row was processed."/>
+        <FIELD NAME="course_idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_shortname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="course_template" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Assumed same characteristics as course_idnumber"/>
+        <FIELD NAME="course_visibility" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Assuming boolean per {course}.visible."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

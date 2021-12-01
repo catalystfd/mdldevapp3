@@ -44,7 +44,7 @@ $string['setactivereplica'] = 'Setting replica as active: {$a}';
 $string['tasklogwarning'] = 'WARNING: {$a}';
 $string['emailcooldownskip'] = 'Warning email has already been sent within cooldown period. Skipping further email.';
 
-$string['courseimport:crontask'] = 'Import course XML file from SFTP';
+$string['courseimport:crontask'] = 'Import Course XML file from SFTP';
 $string['courseimport:starttask'] = 'Importing courses into table: {$a}';
 $string['courseimport:completetask'] = 'Course import complete.';
 $string['courseimport:flushentries'] = 'Removing any existing course entries from: {$a}';
@@ -72,6 +72,7 @@ $string['error:importcountoverthreshold'] = 'Number of rows in import has exceed
 $string['error:invalidreplica'] = 'Invalid replica table: {$a}';
 $string['error:noopen'] = 'Could not open file {$a}.';
 $string['error:nosyncpath'] = 'Sync file directory path is not set. Please configure in the settings.';
+$string['error:invalidtable'] = 'Invalid table: {$a}';
 
 $string['warning:timestampmatch'] = 'Timestamp exactly matches previously imported file. Importing skipped.';
 $string['warning:dryrun'] = 'Dry run: no table name specified.';

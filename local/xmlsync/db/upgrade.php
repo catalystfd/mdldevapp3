@@ -86,6 +86,53 @@ function xmldb_local_xmlsync_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2021112600, 'local', 'xmlsync');
     }
 
+    if ($oldversion < 2021120102) {
+
+        // Define table local_xmlsync_crsimport to be created.
+        $table = new xmldb_table('local_xmlsync_crsimport');
+
+        // Adding fields to table local_xmlsync_crsimport_log.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('course_idnumber', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_fullname', XMLDB_TYPE_CHAR, '254', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_shortname', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_template', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_visibility', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+
+        // Adding keys to table local_xmlsync_crsimport.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for local_xmlsync_crsimport.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table local_xmlsync_crsimport_log to be created.
+        $table = new xmldb_table('local_xmlsync_crsimport_log');
+
+        // Adding fields to table local_xmlsync_crsimport_log.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('rowaction', XMLDB_TYPE_CHAR, '1', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('rowprocessed', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('course_idnumber', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_fullname', XMLDB_TYPE_CHAR, '254', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_shortname', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_template', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('course_visibility', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+
+        // Adding keys to table local_xmlsync_crsimport_log.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for local_xmlsync_crsimport_log.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Xmlsync savepoint reached.
+        upgrade_plugin_savepoint(true, 2021120102, 'local', 'xmlsync');
+    }
+
+
     return true;
 }
 

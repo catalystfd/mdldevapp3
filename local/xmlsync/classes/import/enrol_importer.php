@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 class enrol_importer extends base_importer {
-    const ENROL_IMPORT_FILENAME = 'moodle_enr.xml';
+    const ENROLIMPORT_FILENAME = 'moodle_enr.xml';
 
     /**
      * Mapping from incoming XML field names to database column names.
@@ -52,7 +52,7 @@ class enrol_importer extends base_importer {
      * Constructor.
      */
     public function __construct() {
-        $this->filepath = $this->get_filepath(get_config('local_xmlsync', 'syncpath'), self::ENROL_IMPORT_FILENAME);
+        $this->filepath = $this->get_filepath(get_config('local_xmlsync', 'syncpath'), self::ENROLIMPORT_FILENAME);
         $this->reader = new \XMLReader();
         if (!$this->reader->open($this->filepath)) {
             throw new \Exception(get_string('error:noopen', 'local_xmlsync', $this->filepath));

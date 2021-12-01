@@ -23,6 +23,11 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+// Course uses a non-replicated database, but we may log actions later.
+const COURSEIMPORT_MAIN = 'crsimport';
+const COURSEIMPORT_LOG = 'crsimport_log';
+
+// Enrol and User have replicas for now.
 const ENROLIMPORT_A = 'enrolimport_a';
 const ENROLIMPORT_B = 'enrolimport_b';
 const ENROLIMPORT_REPLICAS = array(ENROLIMPORT_A, ENROLIMPORT_B);
@@ -33,6 +38,54 @@ const USERIMPORT_B = 'userimport_b';
 const USERIMPORT_REPLICAS = array(USERIMPORT_A, USERIMPORT_B);
 const USERIMPORT_ACTIVE_REPLICA_SETTING = 'userimport_activereplica';
 
+
+/*** Course Import functions ***/
+
+/** Get main table for reading and imports.
+ *
+ * @return string Table name (local_xmlsync_$tablename)
+ */
+function local_xmlsync_get_courseimport_main() {
+    return COURSEIMPORT_MAIN;
+}
+
+/** Get log table for audit and review.
+ *
+ * @return string Table name (local_xmlsync_$logtablename)
+ */
+function local_xmlsync_get_courseimport_log() {
+    return COURSEIMPORT_LOG;
+}
+
+/**
+ * Return deserialized enrol import metadata array.
+ *
+ * @return array|null Metadata from import, if set.
+ */
+function local_xmlsync_get_courseimport_metadata() {
+    $metadata = get_config('local_xmlsync', COURSEIMPORT_MAIN . "_metadata");
+    if ($metadata) {
+        return json_decode($metadata, true);
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Ensure a table name is valid.
+ *
+ * With no replicas, this should be the standable import table name.
+ *
+ * @param string $tablename
+ * @throws \Exception if not valid.
+ * @return void
+ */
+function local_xmlsync_validate_courseimport($tablename) {
+    if ($tablename !== COURSEIMPORT_MAIN) {
+        throw new \Exception(get_string('error:invalidtable', 'local_xmlsync', $tablename));
+    }
+
+}
 
 /*** Enrol Import functions ***/
 
