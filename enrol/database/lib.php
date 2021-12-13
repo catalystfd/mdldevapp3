@@ -738,6 +738,8 @@ class enrol_database_plugin extends enrol_plugin {
                     } else {
                         $course->category = $defaultcategory;
                     }
+                    // WR#371794: Add hiding/unhiding.
+                    \local_xmlsync\util::enrol_database_course_hook($course);
                     $createcourses[] = $course;
                 }
             }
