@@ -24,6 +24,7 @@
  */
 
 namespace local_xmlsync;
+
 defined('MOODLE_INTERNAL') || die();
 
 class util {
@@ -46,7 +47,81 @@ class util {
         $params = array('idnum' => $course->idnumber);
         $matchingrecord = $DB->get_record_select('local_xmlsync_crsimport', $select, $params);
         if ($matchingrecord) {
-            $course->visible = $matchingrecord->visibility;
+            $course->visible = $matchingrecord->course_visibility;
+        }
+    }
+
+    /**
+     * Hook for enrol_database: Check whether course with idnumber has entry in course import.
+     *
+     * WR#371793
+     *
+     * @param string $idnumber
+     * @return boolean
+     */
+    public static function enrol_database_template_check($idnumber) : bool {
+        global $DB;
+        $select = $DB->sql_like('course_idnumber', ':idnum', false); // Case insensitive.
+        $params = array('idnum' => $idnumber);
+        $matchingrecord = $DB->get_record_select('local_xmlsync_crsimport', $select, $params);
+
+        if ($matchingrecord && $matchingrecord->course_template != '') {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Hook for enrol_database: clone course from template.
+     *
+     * If:
+     * - an xmlsync record with a matching idnumber is found
+     * - its template field is a valid course idnumber
+     * Then clone the template course content into the new course, minus user data.
+     *
+     * Required core change injected into enrol/database/lib.php sync_courses:
+     *     \local_xmlsync\util::enrol_database_template_hook($course);
+     *
+     * WR#371793
+     *
+     * @param stdClass $course
+     * @return void
+     */
+    public static function enrol_database_template_hook($course) {
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+        require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
+        $select = $DB->sql_like('course_idnumber', ':idnum', false); // Case insensitive.
+        $params = array('idnum' => $course->idnumber);
+        $matchingrecord = $DB->get_record_select('local_xmlsync_crsimport', $select, $params);
+        if ($matchingrecord) {
+            $templatecourse = $DB->get_record('course', array('idnumber' => $matchingrecord->course_template));
+
+            if ($templatecourse) {
+                echo "Found matching record and template course.\n";
+                echo "Cloning from '{$templatecourse->fullname}' into '{$course->fullname}':\n";
+
+                // Make a fake course copy form.
+                $dummyform = array(
+                    'courseid' => $templatecourse->id,  // Copying from here.
+                    'fullname' => $course->fullname,
+                    'shortname' => $course->shortname,
+                    'category' => $course->category,
+                    'visible' => $course->visible,
+                    'startdate' => $course->startdate,
+                    'enddate' => $course->enddate,
+                    'idnumber' => $course->idnumber,
+                    'userdata' => '0',  // Do not copy user data.
+                    'role_1' => '1', // Keep managers?
+                    'role_5' => '0', // Drop students.
+                );
+                // Cast to stdClass object.
+                $mdata = (object) $dummyform;
+
+                $backupcopy = new \core_backup\copy\copy($mdata);
+                $backupcopy->create_copy();
+            }
         }
     }
 }

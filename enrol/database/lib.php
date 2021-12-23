@@ -809,6 +809,12 @@ class enrol_database_plugin extends enrol_plugin {
                     $trace->output("can not insert new course, duplicate idnumber detected: ".$newcourse->idnumber, 1);
                     continue;
                 }
+                // WR#371793: Clone content from template course, if there is an individual template.
+                if (\local_xmlsync\util::enrol_database_template_check($newcourse->idnumber)) {
+                    \local_xmlsync\util::enrol_database_template_hook($newcourse);
+                    continue;
+                }
+
                 $c = create_course($newcourse);
                 $trace->output("creating course: $c->id, $c->fullname, $c->shortname, $c->idnumber, $c->category", 1);
             }
