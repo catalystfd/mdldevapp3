@@ -50,30 +50,10 @@ class enrol_import_task extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/local/xmlsync/locallib.php');
 
         $importer = new \local_xmlsync\import\enrol_importer();
-
-        // Fetch last import count and timestamp from active replica's metadata, if present.
-        $active = local_xmlsync_get_enrolimport_active_replica();
-        $activemeta = local_xmlsync_get_enrolimport_metadata($active);
-        if ($activemeta) {
-            if (array_key_exists('importcount', $activemeta)) {
-                $importer->lastimportcount = $activemeta['importcount'];
-            }
-            if (array_key_exists('sourcetimestamp', $activemeta)) {
-                $importer->lastsourcetimestamp = $activemeta['sourcetimestamp'];
-            }
-        }
-
-        $inactive = local_xmlsync_get_enrolimport_inactive_replica();
-
-        echo get_string('enrolimport:starttask', 'local_xmlsync', $inactive) . "\n";
-        $importcompleted = $importer->import($inactive);
-
-        // If a successful import took place, set new active replica table.
-        if ($importcompleted) {
-            echo get_string('enrolimport:completetask', 'local_xmlsync') . "\n";
-            echo get_string('setactivereplica', 'local_xmlsync', $inactive) . "\n";
-            local_xmlsync_set_enrolimport_active_replica($inactive);
-        }
+        echo get_string('enrolimport:starttask', 'local_xmlsync') . "\n";
+        $importer->import();
+        $importer->sync();
+        echo get_string('enrolimport:completetask', 'local_xmlsync') . "\n";
     }
 
 }

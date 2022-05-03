@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/xmlsync/db" VERSION="20211201" COMMENT="XMLDB file for Moodle local/xmlsync"
+<XMLDB PATH="local/xmlsync/db" VERSION="20220504" COMMENT="XMLDB file for Moodle local/xmlsync"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="local_xmlsync_userimport_a" COMMENT="Stores user import data from an incoming XML file. Replica one of two.">
+    <TABLE NAME="local_xmlsync_userimport" COMMENT="Master table of imported delta user files">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="email" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="firstname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="lastname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -30,11 +30,11 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_xmlsync_userimport_b" COMMENT="Stores user import data from an incoming XML file. Replica two of two.">
+    <TABLE NAME="local_xmlsync_userimport_tmp" COMMENT="Contains the delta file being operated on">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="username" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="email" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="firstname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="lastname" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -51,12 +51,13 @@
         <FIELD NAME="deactivate_dt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="archive_dt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="purge_dt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="2" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Action to take U (Update), D (Delete)"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_xmlsync_enrolimport_a" COMMENT="Stores enrolment import data from an incoming XML file. Replica one of two.">
+    <TABLE NAME="local_xmlsync_enrlimport" COMMENT="Master table of all imported enrolment delta files">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course_idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -75,7 +76,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_xmlsync_enrolimport_b" COMMENT="Stores enrolment import data from an incoming XML file. Replica two of two.">
+    <TABLE NAME="local_xmlsync_enrlimport_tmp" COMMENT="Inflight import table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course_idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
@@ -89,34 +90,34 @@
         <FIELD NAME="maori" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
         <FIELD NAME="pacific" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
         <FIELD NAME="international" TYPE="char" LENGTH="1" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Y/N"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="2" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Action to take U (Update), D (Delete)"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_xmlsync_crsimport" COMMENT="Stores course import data from an incoming XML file.">
+    <TABLE NAME="local_xmlsync_crsimport" COMMENT="Master table of all imported course delta files">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course_idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_shortname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_template" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Assumed same characteristics as course_idnumber"/>
-        <FIELD NAME="course_visibility" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Assuming boolean per {course}.visible."/>
+        <FIELD NAME="course_visibility" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Assuming boolean per {course}.visible."/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_xmlsync_crsimport_log" COMMENT="Logs course import data from an incoming XML file.">
+    <TABLE NAME="local_xmlsync_crsimport_tmp" COMMENT="Inflight import of course data">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="rowaction" TYPE="char" LENGTH="1" NOTNULL="true" SEQUENCE="false" COMMENT="Import row action: U=Create/Update, D=Delete"/>
-        <FIELD NAME="rowprocessed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time when import row was processed."/>
         <FIELD NAME="course_idnumber" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_fullname" TYPE="char" LENGTH="254" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_shortname" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="course_template" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" COMMENT="Assumed same characteristics as course_idnumber"/>
-        <FIELD NAME="course_visibility" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Assuming boolean per {course}.visible."/>
+        <FIELD NAME="course_visibility" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="1" SEQUENCE="false" COMMENT="Assuming boolean per {course}.visible."/>
+        <FIELD NAME="action" TYPE="char" LENGTH="2" NOTNULL="true" DEFAULT="?" SEQUENCE="false" COMMENT="Action to take U (Update), D (Delete)"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

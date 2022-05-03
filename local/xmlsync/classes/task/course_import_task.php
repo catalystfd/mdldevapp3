@@ -50,26 +50,10 @@ class course_import_task extends \core\task\scheduled_task {
         require_once($CFG->dirroot . '/local/xmlsync/locallib.php');
 
         $importer = new \local_xmlsync\import\course_importer();
-
-        // Fetch last import count and timestamp from active replica's metadata, if present.
-        $tablename = local_xmlsync_get_courseimport_main();
-        $meta = local_xmlsync_get_courseimport_metadata();
-        if ($meta) {
-            if (array_key_exists('importcount', $meta)) {
-                $importer->lastimportcount = $meta['importcount'];
-            }
-            if (array_key_exists('sourcetimestamp', $meta)) {
-                $importer->lastsourcetimestamp = $meta['sourcetimestamp'];
-            }
-        }
-
-        echo get_string('courseimport:starttask', 'local_xmlsync', $tablename) . "\n";
-        $importcompleted = $importer->import();
-
-        // If a successful import took place, set new active replica table.
-        if ($importcompleted) {
-            echo get_string('courseimport:completetask', 'local_xmlsync') . "\n";
-        }
+        echo get_string('courseimport:starttask', 'local_xmlsync') . "\n";
+        $importer->import();
+        $importer->sync();
+        echo get_string('courseimport:completetask', 'local_xmlsync') . "\n";
     }
 
 }

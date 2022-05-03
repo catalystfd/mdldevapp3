@@ -35,40 +35,39 @@ $string['settings:stale_warning_recipients'] = 'Stale import warning recipients'
 $string['settings:stale_warning_recipients_desc'] = 'A comma-separated list of email addresses to send stale import warnings to. If no addresses are given, site administrators will be notified.';
 $string['settings:email_cooldown'] = 'Email cooldown period';
 $string['settings:email_cooldown_desc'] = 'The minimum elapsed time between sending warning emails. (Warnings will still be noted in the task log.)';
-
+$string['settings:import_batch_threshold'] = 'The maximum batchsize during the import step';
+$string['settings:import_batch_threshold_desc'] = 'Defines how many records should be read from the xml file and then inserted at once into the database, a higher value is better for performance, but be aware that too large and you might exhaust memory available to the cron task';
 $string['dryruncomplete'] = 'Dry run complete.';
 $string['dryrunmetadata'] = 'Metadata: {$a}';
-$string['importingrowcount'] = '{$a} rows imported.';
-$string['importingstart'] = 'Importing...';
-$string['setactivereplica'] = 'Setting replica as active: {$a}';
+$string['importingstart'] = 'Importing records into {$a}...';
 $string['tasklogwarning'] = 'WARNING: {$a}';
 $string['emailcooldownskip'] = 'Warning email has already been sent within cooldown period. Skipping further email.';
 
+
+$string['import:flushentries'] = 'Removing any existing course entries from import temp table {$a}';
+$string['import:filename'] = 'The file in question is - {$a}';
+$string['import:stalefile'] = "The supplied import XML file is older than expected.\nThe import task will continue, but a newer file should be uploaded if available.";
+$string['import:stalefile_timestamp'] = 'ROWSET timestamp given: {$a}';
+$string['import:stalemailsubject'] = 'Warning: Old XML file encountered in import {$a}';
+$string['import:sanitycheck'] = 'Sanity checking delta file';
+$string['import:rowcount'] = '{$a->importcount} rows imported, of which {$a->updatecount} were update actions and {$a->deletecount} were delete actions';
+
+$string['sync:start'] = 'Now aligning the primary table {$a->maintable} with the delta from the import table {$a->importtable}';
+$string['sync:complete'] = 'Alignment complete, new main table record count {$a->post_sync_total}, delta change was {$a->delta}, {$a->deletecount} records were deleted, {$a->updatecount} records were updated, {$a->insertcount} records were created';
+
 $string['courseimport:crontask'] = 'Import Course XML file from SFTP';
-$string['courseimport:starttask'] = 'Importing courses into table: {$a}';
+$string['courseimport:starttask'] = 'Importing courses into table';
 $string['courseimport:completetask'] = 'Course import complete.';
-$string['courseimport:flushentries'] = 'Removing any existing course entries from: {$a}';
-$string['courseimport:stalefile'] = "The supplied course import XML file is older than expected.\nThe import task will continue, but a newer file should be uploaded if available.";
-$string['courseimport:stalefile_timestamp'] = 'ROWSET timestamp given: {$a}';
-$string['courseimport:stalemailsubject'] = 'Warning: Old XML file encountered in course import';
 
 $string['enrolimport:crontask'] = 'Import Enrol XML file from SFTP';
-$string['enrolimport:starttask'] = 'Importing enrolment data into replica table: {$a}';
+$string['enrolimport:starttask'] = 'Importing enrolment data';
 $string['enrolimport:completetask'] = 'Enrol import complete.';
-$string['enrolimport:flushentries'] = 'Removing any existing enrolment entries from: {$a}';
-$string['enrolimport:stalefile'] = "The supplied enrol import XML file is older than expected.\nThe import task will continue, but a newer file should be uploaded if available.";
-$string['enrolimport:stalefile_timestamp'] = 'ROWSET timestamp given: {$a}';
-$string['enrolimport:stalemailsubject'] = 'Warning: Old XML file encountered in enrol import';
 
 $string['userimport:crontask'] = 'Import User XML file from SFTP';
-$string['userimport:starttask'] = 'Importing users into replica table: {$a}';
+$string['userimport:starttask'] = 'Importing users';
 $string['userimport:completetask'] = 'User import complete.';
-$string['userimport:flushentries'] = 'Removing any existing user entries from: {$a}';
-$string['userimport:stalefile'] = "The supplied user import XML file is older than expected.\nThe import task will continue, but a newer file should be uploaded if available.";
-$string['userimport:stalefile_timestamp'] = 'ROWSET timestamp given: {$a}';
-$string['userimport:stalemailsubject'] = 'Warning: Old XML file encountered in user import';
 
-$string['error:importcountoverthreshold'] = 'Number of rows in import has exceeded safety threshold (+/- {$a->maxdelta}). Count changed by {$a->countdelta} rows.';
+$string['error:importcountoverthreshold'] = 'Number of rows in import has exceeded safety threshold (+/- {$a->maxdelta}). Count changed by {$a->delta} rows.';
 $string['error:invalidreplica'] = 'Invalid replica table: {$a}';
 $string['error:noopen'] = 'Could not open file {$a}.';
 $string['error:nosyncpath'] = 'Sync file directory path is not set. Please configure in the settings.';

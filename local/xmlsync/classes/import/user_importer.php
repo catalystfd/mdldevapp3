@@ -28,7 +28,11 @@ defined('MOODLE_INTERNAL') || die();
 
 
 class user_importer extends base_importer {
-    const USERIMPORT_FILENAME = 'moodle_per.xml';
+    public $filename = 'moodle_per.xml';
+
+    public $import_temp_tablename = 'local_xmlsync_userimport_tmp';
+
+    public $import_main_tablename = 'local_xmlsync_userimport';
 
     /**
      * Import count from last import, if any.
@@ -68,143 +72,74 @@ class user_importer extends base_importer {
         'DEACTIVATE_DT' => 'deactivate_dt',
         'ARCHIVE_DT'    => 'archive_dt',
         'PURGE_DT'      => 'purge_dt',
+        'ACTION'        => 'action',
     );
 
-    /**
-     * Constructor.
-     */
-    public function __construct() {
-        $this->filepath = $this->get_filepath(get_config('local_xmlsync', 'syncpath'), self::USERIMPORT_FILENAME);
-        $this->reader = new \XMLReader();
-        if (!$this->reader->open($this->filepath)) {
-            throw new \Exception(get_string('error:noopen', 'local_xmlsync', $this->filepath));
-        }
-    }
-
-    /**
-     * Import XML rowset into the nominated table.
-     *
-     * Using a blue/green table structure, new data should be imported into the non-active replica.
-     *
-     * @param string $replicaname Replica table name suffix.
-     * @param bool $flush Whether to flush existing entries before import.
-     * @return bool True when a live table import was completed, false on a dry run.
-     */
-    public function import($replicaname = null, $flush = true) {
+    public function get_records_to_create($importtable, $maintable)
+    {
         global $DB;
-
-        if (empty($replicaname)) {
-            echo get_string('warning:dryrun', 'local_xmlsync') . "\n";
-            $liveimport = false;
-        } else {
-            local_xmlsync_validate_userimport_replica($replicaname);
-
-            $importtable = "local_xmlsync_{$replicaname}";
-            $liveimport = true;
-
-            if ($flush) {
-                echo get_string('userimport:flushentries', 'local_xmlsync', $importtable) . "\n";
-                $DB->delete_records($importtable);
-                echo get_string('importingstart', 'local_xmlsync') . "\n";
-            }
-
-        }
-
-        $reader = $this->reader;  // Shorthand.
-
-        // Ensure we have the right top-level node.
-        $reader->read();
-        assert($reader->name == self::XMLROWSET);
-
-        // Parse time and convert to Unix timestamp.
-        $sourcetimestamp = (new \DateTimeImmutable($reader->getAttribute("timestamp")))->getTimestamp();
-
-        $metadata = array(
-            "sourcefile" => $reader->getAttribute("sourcefile"),
-            "sourcetimestamp" => $sourcetimestamp,
-        );
-        $importcount = 0;
-
-        // Check for stale file import: warn, but continue processing.
-        $stalethreshold = get_config('local_xmlsync', 'stale_threshold'); // Difference in seconds.
-        $now = (new \DateTimeImmutable('now'))->getTimestamp();
-        $filedelta = ($now - $sourcetimestamp); // Difference in seconds.
-        if ($filedelta > $stalethreshold) {
-            local_xmlsync_warn_import(
-                get_string('userimport:stalefile', 'local_xmlsync')
-                . "\n\n"
-                . get_string('userimport:stalefile_timestamp', 'local_xmlsync', $reader->getAttribute("timestamp"))
-                . "\n",
-                get_string('userimport:stalemailsubject', 'local_xmlsync')
-            );
-        }
-
-        // Check for last timestamp match: skip processing if equal.
-        if ($this->lastsourcetimestamp) {
-            if ($this->lastsourcetimestamp == $sourcetimestamp) {
-                echo get_string('warning:timestampmatch', 'local_xmlsync') . "\n";
-                return false;
-            }
-        }
-
-        // Traverse the XML document, looking for rows and a rowcount at the end.
-        while ($reader->read()) {
-            // Parse from element start tags.
-            if ($reader->nodeType == \XMLReader::ELEMENT) {
-                if ($reader->name == self::XMLROW) {
-                    $rowdata = array();
-                    $rownode = $reader->expand();
-                    foreach (array_keys($this->rowmapping) as $xmlfield) {
-                        $this->import_rowfield($rowdata, $rownode, $xmlfield);
-                    }
-
-                    $rowaction = $this->get_row_element($rownode, self::XMLACTION);
-
-                    if ($liveimport) {
-                        $DB->insert_record($importtable, $rowdata);
-                    }
-
-                    $importcount++;
-
-                } else if ($reader->name == self::XMLROWCOUNT) {
-                    $metadata["rowcount"] = (int) $reader->readString();
-                }
-            }
-        }
-
-        // Ensure imported row count matches expected tally.
-        if ($importcount != $metadata["rowcount"]) {
-            throw new \Exception("Row count mismatch: imported {$importcount} rows, expected {$metadata["rowcount"]} rows.");
-        }
-
-        // Ensure imported row count hasn't drifted too far from any previous value.
-        if ($this->lastimportcount) {
-            $countdelta = $importcount - $this->lastimportcount;
-            $maxdelta = get_config('local_xmlsync', 'import_count_threshold');
-            // Skip the check if threshold is set to 0.
-            if ($maxdelta > 0 && $maxdelta < abs($countdelta)) {
-                throw new \Exception(get_string('error:importcountoverthreshold', 'local_xmlsync', array(
-                    'countdelta' => $countdelta,
-                    'maxdelta' => $maxdelta,
-                )));
-            }
-        }
-
-        $metadata['importcount'] = $importcount;
-        $metadata['importedtime'] = (new \DateTimeImmutable('now'))->getTimestamp();
-        ksort($metadata);
-
-        if ($liveimport) {
-            // When successful, update settings for import metadata.
-            echo get_string('importingrowcount', 'local_xmlsync', $importcount) . "\n";
-            set_config("{$replicaname}_metadata", json_encode($metadata), 'local_xmlsync');
-            return true;
-        } else {
-            // This should only happen in diagnostic dry runs.
-            echo get_string('dryruncomplete', 'local_xmlsync') . "\n";
-            echo get_string('dryrunmetadata', 'local_xmlsync', json_encode($metadata)) . "\n";
-            return false;
-        }
+        $params = array(self::ACTION_UPDATE);
+        $sql = "
+            SELECT import.*
+              FROM {{$importtable}} import
+         LEFT JOIN {{$maintable}} main
+                ON main.idnumber = import.idnumber
+             WHERE main.id IS NULL
+               AND import.action = ?";
+        $result = $DB->get_records_sql($sql, $params);
+        return $result;
     }
 
+    public function get_records_to_delete($importtable, $maintable)
+    {
+         global $DB;
+         $params = array(self::ACTION_DELETE);
+         $sql = "
+            SELECT main.id
+              FROM {{$importtable}} import
+        INNER JOIN {{$maintable}} main
+                ON main.idnumber = import.idnumber
+             WHERE import.action = ?
+         ";
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    public function get_records_to_update($importtable, $maintable)
+    {
+        global $DB;
+        //Get list of fields to import from the import table
+        //We also use the wheresql to only get records that have
+        //actually effectively changed in any way - by checking
+        //that any of the fields is actually != to the main table
+        //You can see we return with the main table records id
+        //so these returned records can go straight into an
+        //update_record call
+        list($selectsql, $wheresql) = $this->get_update_sql_helpers($importtable, $maintable);
+        $params = array(self::ACTION_UPDATE);
+        $sql = "
+            SELECT main.id, {$selectsql}
+              FROM {{$importtable}} import
+        INNER JOIN {{$maintable}} main
+                ON main.idnumber = import.idnumber
+             WHERE import.action = ?
+             AND ( {$wheresql} )
+        ";
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * For users, we really want a null in the password field if none is provided.
+     * @param mixed $nodevalue 
+     * @param mixed $columname 
+     * @return void 
+     */
+    public function validate_parameter($nodevalue, $columname)
+    {
+        if($columname == 'password') {
+            if(!isset($nodevalue) || $nodevalue == '') {
+                $nodevalue = null;
+            }
+        }
+        return $nodevalue;
+    }
 }

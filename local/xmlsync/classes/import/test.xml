@@ -1,0 +1,49 @@
+
+XML file containing course records.
+
+<ROW>
+    <COURSE_IDNUMBER> C100 </COURSE_IDNUMBER>  #This is the value that will be set as the courses IDnumber in moodle (char 100)
+    <COURSE_FULLNAME>Computing 100</COURSE_FULLNAME> # This is the value that will be set as the course fullname (char 254)
+    <COURSE_SHORTNAME>Comp100</COURSE_SHORTNAME> # this is the value set as the course shortname (char 255)
+    <COURSE_TEMPLATE>C100TEMP</COURSE_TEMPLATE> # This is moodle idnumber field that should match a preexisting course. When this field is present on a row being created, the target course will be cloned into the new course.
+    <COURSE_VISIBILITY>1</COURSE_VISIBILITY> # This sets the visibility of the course in moodle to either hidden (0), or shown (1)
+</ROW>
+
+
+XML file containing user records
+
+<ROW>
+    <USERNAME>fdevi005</USERNAME>  #Moodle username
+    <PASSWORD>null</PASSWORD> # Moodle password, in your students case will be null, as the majority will login via SSO, hwoever you can actually set this and Moodle will hash and set it as the resulting password.
+    <EMAIL>fdevi@unitec.ac.nz</EMAIL> # Set the users email address
+    <IDNUMBER>100235</IDNUMBER> #The users idnumber, this can be anything but should be consistent to that user, as it's used for the mappings in the sync processes
+    <FIRSTNAME>Francis</FIRSTNAME> # moodle firstname
+    <LASTNAME>Francis</LASTNAME> # moodle lastname
+    <CITY>Wellington</CITY> # moodle city 
+    <COUNTRY>NZ</COUNTRY> # Should be the https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 code for the country
+    <LANG>en</LANG> # The language for the user - depends on the language packs installed as to what this value should be - https://docs.moodle.org/311/en/Language_packs. The default should be 'en'
+    <DESCRIPTION>A summary blurb about this user</DESCRIPTION> # Users can enter a text description on their profile, you can update this if you choose
+    <PHONE1>0800323232</PHONE1> #First phone field on user profile
+    <PHONE2>0800323232</PHONE2> #Second phone field on user profile
+    <MIDDLENAME>Middlename</MIDDLENAME> # middle name field on user profile
+    <ACTIVATION_DT>unused</ACTIVATION_DT> #unused for future use
+    <DEACTIVATE_DT>unused</DEACTIVATE_DT> #unused for future use
+    <ARCHIVE_DT>unused</ARCHIVE_DT> #unused for future use
+    <PURGE_DT>unused</PURGE_DT> #unused for future use
+</ROW>
+
+XML file containing enrolment records
+
+<ROW>
+    <COURSE_IDNUMBER>C100</COURSE_IDNUMBER> # Should match a record in the course import, or an existing course in the site
+    <USERNAME>fdevi005</USERNAME> # The moodle username of the user being enrolled
+    <ROLE_SHORTNAME>student</ROLE_SHORTNAME> # THe moodle shortname of the role you want to apply in the course to this user
+    <USER_IDNUMBER>100235</USER_IDNUMBER> # should match the user idnumber of the user being enrolled
+    <ETHNIC_CODES>unused by our sync but available in the table</ETHNIC_CODES>  # you were clarifying if these were still in use when last discussed
+    <ETHNIC_DESCRIPTION>unused by our sync but available in the table</ETHNIC_DESCRIPTION>
+    <RESIDENCY>unused by our sync but available in the table</RESIDENCY>
+    <UNDER_25>unused by our sync but available in the table</UNDER_25>
+    <MAORI>unused by our sync but available in the table</MAORI>
+    <PACIFIC>unused by our sync but available in the table</PACIFIC>
+    <INTERNATIONAL>unused by our sync but available in the table</INTERNATIONAL>
+</ROW>

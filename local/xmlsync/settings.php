@@ -40,6 +40,12 @@ if ($hassiteconfig) {
         0, PARAM_INT
     ));
 
+    $settings->add(new admin_setting_configtext('local_xmlsync/import_batch_threshold',
+    get_string('settings:import_batch_threshold', 'local_xmlsync'),
+    get_string('settings:import_batch_threshold_desc', 'local_xmlsync'),
+    \local_xmlsync\import\base_importer::BATCH_COUNT, PARAM_INT
+    ));
+
     $settings->add(new admin_setting_configduration('local_xmlsync/stale_threshold',
         get_string('settings:stale_threshold', 'local_xmlsync'),
         get_string('settings:stale_threshold_desc', 'local_xmlsync'), (24 * 3600), 3600 // One day default.
